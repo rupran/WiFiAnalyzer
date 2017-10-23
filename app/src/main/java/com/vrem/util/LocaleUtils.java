@@ -49,7 +49,18 @@ public class LocaleUtils {
     }
 
     public static Locale findByLanguageTag(@NonNull String languageTag) {
-        return find(SUPPORTED_LOCALES, new LanguageTagPredicate(fromLanguageTag(languageTag)));
+        return find(SUPPORTED_LOCALES, new LanguageTagPredicate(fromLanguageTag(languageTag), true));
+    }
+
+    public static String findClosestLanguageTag(@NonNull Locale input) {
+        // Check full matches (language and country) first
+        Locale match = IterableUtils.find(SUPPORTED_LOCALES, new LanguageTagPredicate(input, true));
+        if (match == null) {
+            // If no such match was found, try with language alone
+            match = IterableUtils.find(SUPPORTED_LOCALES, new LanguageTagPredicate(input, false));
+        }
+        // If there is no match at all, use English as fallback
+        return toLanguageTag(match == null ? Locale.ENGLISH : match);
     }
 
     public static List<Locale> getAllCountries() {
@@ -104,14 +115,20 @@ public class LocaleUtils {
 
     private static class LanguageTagPredicate implements Predicate<Locale> {
         private final Locale locale;
+        private final boolean checkCountry;
 
-        private LanguageTagPredicate(@NonNull Locale locale) {
+        private LanguageTagPredicate(@NonNull Locale locale, boolean checkCountry) {
             this.locale = locale;
+            this.checkCountry = checkCountry;
         }
 
         @Override
         public boolean evaluate(Locale object) {
-            return object.getLanguage().equals(locale.getLanguage()) && object.getCountry().equals(locale.getCountry());
+            boolean returnValue = object.getLanguage().equals(locale.getLanguage());
+            if (returnValue && this.checkCountry) {
+                returnValue = object.getCountry().equals(locale.getCountry());
+            }
+            return returnValue;
         }
     }
 

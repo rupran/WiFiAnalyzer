@@ -30,12 +30,13 @@ import java.util.Locale;
 public class ConfigurationUtils {
     @NonNull
     public static String getDefaultCountryCode(@NonNull Context context) {
-        return getDefault(context).getCountry();
+        String country = getDefault(context).getCountry();
+        return country.isEmpty() ? Locale.getDefault().getCountry() : country;
     }
 
     @NonNull
     public static String getDefaultLanguageTag(@NonNull Context context) {
-        return LocaleUtils.toLanguageTag(getDefault(context));
+        return LocaleUtils.findClosestLanguageTag(getDefault(context));
     }
 
     @SuppressWarnings("deprecation")

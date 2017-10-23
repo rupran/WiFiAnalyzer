@@ -31,10 +31,8 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Set;
 
 public class LanguagePreference extends CustomPreference {
 
@@ -44,9 +42,7 @@ public class LanguagePreference extends CustomPreference {
 
     @NonNull
     private static List<Data> getData() {
-        Set<Locale> locales = new HashSet<>(LocaleUtils.SUPPORTED_LOCALES);
-        locales.add(Locale.getDefault());
-        List<Data> results = new ArrayList<>(CollectionUtils.collect(locales, new ToData()));
+        List<Data> results = new ArrayList<>(CollectionUtils.collect(LocaleUtils.SUPPORTED_LOCALES, new ToData()));
         Collections.sort(results);
         return results;
     }
